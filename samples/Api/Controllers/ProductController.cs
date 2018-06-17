@@ -19,10 +19,16 @@ namespace Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
+        [HttpGet("list")]
         public Task<IPageResult<Product>> GetList(int page, int pageSize, CancellationToken token)
         {
             return _mediator.Send(new GetProductList(page, pageSize), token);
+        }
+
+        [HttpGet("listEf")]
+        public Task<IPageResult<ProductEf>> GetListEf(int page, int pageSize, CancellationToken token)
+        {
+            return _mediator.Send(new GetProductListEf(page, pageSize), token);
         }
     }
 }
