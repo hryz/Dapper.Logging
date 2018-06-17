@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Dapper.Logging
 {
-    internal class DbConnectionFactory : IDbConnectionFactory
+    internal class LogDbConnectionFactory : IDbConnectionFactory
     {
         private readonly ILogger<DbConnection> _logger;
         private readonly Func<DbConnection> _factory;
         private readonly DbLoggingConfiguration _cfg;
 
-        public DbConnectionFactory(ILogger<DbConnection> logger, Func<DbConnection> factory, DbLoggingConfiguration cfg)
+        public LogDbConnectionFactory(ILogger<DbConnection> logger, Func<DbConnection> factory, DbLoggingConfiguration cfg)
         {
             _logger = logger;
             _factory = factory;

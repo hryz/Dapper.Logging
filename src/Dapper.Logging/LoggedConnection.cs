@@ -42,7 +42,7 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             await _connection.OpenAsync(cancellationToken);
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionAsyncMessage, sw.ElapsedMilliseconds);
+            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionMessage, sw.ElapsedMilliseconds);
         }
 
         protected override DbCommand CreateDbCommand() => new LoggedCommand(_connection.CreateCommand(), this, _logger, _cfg);

@@ -9,6 +9,14 @@ namespace Dapper.Logging
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Registers the LogDbConnectionFactory in the IoC container 
+        /// </summary>
+        /// <param name="services">The services collection</param>
+        /// <param name="factory">The connection factory delegate</param>
+        /// <param name="config">The configuration delegate</param>
+        /// <param name="lifetime">The service lifetime</param>
+        /// <returns></returns>
         public static IServiceCollection AddDbConnectionFactory(
             this IServiceCollection services, 
             Func<IServiceProvider, DbConnection> factory,
@@ -18,7 +26,7 @@ namespace Dapper.Logging
             var builder = new DbLoggingConfigurationBuilder();
             config?.Invoke(builder);
 
-            object FactoryWrapper(IServiceProvider x) => new DbConnectionFactory(
+            object FactoryWrapper(IServiceProvider x) => new LogDbConnectionFactory(
                 x.GetService<ILogger<DbConnection>>(), 
                 () => factory(x),
                 builder.Build());

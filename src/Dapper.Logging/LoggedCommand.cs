@@ -25,38 +25,38 @@ namespace Dapper.Logging
         }
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior) =>
-            ExecuteAndLog(() => _command.ExecuteReader(behavior), _cfg.ExecuteReaderMessage);
+            ExecuteAndLog(() => _command.ExecuteReader(behavior));
 
         protected override Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken) =>
-            ExecuteAndLog(() => _command.ExecuteReaderAsync(behavior, cancellationToken), _cfg.ExecuteReaderAsyncMessage);
+            ExecuteAndLog(() => _command.ExecuteReaderAsync(behavior, cancellationToken));
 
         public override int ExecuteNonQuery() =>
-            ExecuteAndLog(() => _command.ExecuteNonQuery(), _cfg.ExecuteNonQueryMessage);
+            ExecuteAndLog(() => _command.ExecuteNonQuery());
 
         public override Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken) =>
-            ExecuteAndLog(() => _command.ExecuteNonQueryAsync(cancellationToken), _cfg.ExecuteNonQueryAsyncMessage);
+            ExecuteAndLog(() => _command.ExecuteNonQueryAsync(cancellationToken));
 
         public override object ExecuteScalar() =>
-            ExecuteAndLog(() => _command.ExecuteScalar(), _cfg.ExecuteScalarMessage);
+            ExecuteAndLog(() => _command.ExecuteScalar());
 
         public override Task<object> ExecuteScalarAsync(CancellationToken cancellationToken) =>
-            ExecuteAndLog(() => _command.ExecuteScalarAsync(cancellationToken), _cfg.ExecuteScalarAsyncMessage);
+            ExecuteAndLog(() => _command.ExecuteScalarAsync(cancellationToken));
 
-        private T ExecuteAndLog<T>(Func<T> action, string message)
+        private T ExecuteAndLog<T>(Func<T> action)
         {
             var sw = Stopwatch.StartNew();
             var result = action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, message, CommandText, sw.ElapsedMilliseconds);
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
             return result;
         }
 
-        private async Task<T> ExecuteAndLog<T>(Func<Task<T>> action, string message)
+        private async Task<T> ExecuteAndLog<T>(Func<Task<T>> action)
         {
             var sw = Stopwatch.StartNew();
             var result = await action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, message, CommandText, sw.ElapsedMilliseconds);
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
             return result;
         }
 

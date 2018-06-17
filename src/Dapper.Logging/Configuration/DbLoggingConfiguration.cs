@@ -7,40 +7,18 @@ namespace Dapper.Logging.Configuration
         public DbLoggingConfiguration(
             LogLevel logLevel,
             string openConnectionMessage,
-            string openConnectionAsyncMessage,
             string closeConnectionMessage,
-            string executeNonQueryMessage,
-            string executeNonQueryAsyncMessage,
-            string executeScalarMessage,
-            string executeScalarAsyncMessage,
-            string executeReaderMessage,
-            string executeReaderAsyncMessage)
+            string executeQueryMessage)
         {
             LogLevel = logLevel;
             OpenConnectionMessage = openConnectionMessage;
-            OpenConnectionAsyncMessage = openConnectionAsyncMessage;
             CloseConnectionMessage = closeConnectionMessage;
-            ExecuteNonQueryMessage = executeNonQueryMessage;
-            ExecuteNonQueryAsyncMessage = executeNonQueryAsyncMessage;
-            ExecuteScalarMessage = executeScalarMessage;
-            ExecuteScalarAsyncMessage = executeScalarAsyncMessage;
-            ExecuteReaderMessage = executeReaderMessage;
-            ExecuteReaderAsyncMessage = executeReaderAsyncMessage;
+            ExecuteQueryMessage = executeQueryMessage;
         }
 
         public LogLevel LogLevel { get; }
-
         public string OpenConnectionMessage { get; }
-        public string OpenConnectionAsyncMessage { get; }
         public string CloseConnectionMessage { get; }
-
-        public string ExecuteNonQueryMessage { get; }
-        public string ExecuteNonQueryAsyncMessage { get; }
-
-        public string ExecuteScalarMessage { get; }
-        public string ExecuteScalarAsyncMessage { get; }
-
-        public string ExecuteReaderMessage { get; }
-        public string ExecuteReaderAsyncMessage { get; }
+        public string ExecuteQueryMessage { get; }
     }
 }
