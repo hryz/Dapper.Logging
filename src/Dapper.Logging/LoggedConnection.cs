@@ -1,56 +1,51 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper.Logging.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Dapper.Logging
 {
-    public static class Extensions
-    {
-        public static DbConnection WithLog(this DbConnection src, ILogger<DbCommand> logger)
-        {
-            return new LoggedConnection(src, logger);
-        }
-    }
-
     internal class LoggedConnection : DbConnection
     {
         private readonly DbConnection _connection;
-        private readonly ILogger<DbCommand> _logger;
+        private readonly ILogger _logger;
+        private readonly DbLoggingConfiguration _cfg;
 
-        public LoggedConnection(DbConnection connection, ILogger<DbCommand> logger)
+        public LoggedConnection(DbConnection connection, ILogger logger, DbLoggingConfiguration cfg)
         {
             _connection = connection;
-            _connection = connection;
             _logger = logger;
+            _cfg = cfg;
         }
-
 
         public override void Close()
         {
             var sw = Stopwatch.StartNew();
             _connection.Close();
-            _logger.LogInformation("Dapper connection: close, elapsed: {0} ms", sw.ElapsedMilliseconds);
+            sw.Stop();
+            _logger.Log(_cfg.LogLevel, _cfg.CloseConnectionMessage, sw.ElapsedMilliseconds);
         }
 
         public override void Open()
         {
             var sw = Stopwatch.StartNew();
             _connection.Open();
-            _logger.LogInformation("Dapper connection: open, elapsed: {0} ms", sw.ElapsedMilliseconds);
+            sw.Stop();
+            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionMessage, sw.ElapsedMilliseconds);
         }
 
         public override async Task OpenAsync(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            await _connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogInformation("Dapper connection: open async, elapsed: {0} ms", sw.ElapsedMilliseconds);
+            await _connection.OpenAsync(cancellationToken);
+            sw.Stop();
+            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionAsyncMessage, sw.ElapsedMilliseconds);
         }
 
-        protected override DbCommand CreateDbCommand() => new LoggedCommand(_connection.CreateCommand(), this, _logger);
+        protected override DbCommand CreateDbCommand() => new LoggedCommand(_connection.CreateCommand(), this, _logger, _cfg);
 
         //other members
 

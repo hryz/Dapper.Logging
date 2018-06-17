@@ -1,8 +1,6 @@
-﻿using System.Data.SqlClient;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
 using Data.Abstract;
 using Data.Products.Queries;
 using Data.Products.ReadModels;
@@ -22,9 +20,11 @@ namespace Data.Products.QueryHandlers
         public async Task<IPageResult<ProductEf>> Handle(GetProductListEf request, CancellationToken cancellationToken)
         {
             var count = await _context.Products
+                .Where(x => x.Price > 0)
                 .CountAsync(cancellationToken);
 
             var page = await _context.Products
+                .Where(x => x.Price > 0)
                 .OrderBy(x => x.Id)
                 .Skip(request.Skip())
                 .Take(request.Take())
