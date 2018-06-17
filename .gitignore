@@ -3,3 +3,5 @@
 bin/
 obj/
 _ReSharper.Caches/
+**/*.DotSettings.user
+**/Logs/

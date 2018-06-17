@@ -1,10 +1,13 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data.Common;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Dapper.Logging;
 using Data.Abstract;
 using Data.Products.Queries;
 using Data.Products.ReadModels;
+using Microsoft.Extensions.Logging;
 
 namespace Data.Products.QueryHandlers
 {
@@ -28,10 +31,12 @@ namespace Data.Products.QueryHandlers
           FETCH NEXT @take ROWS ONLY";
 
         private readonly IConnectionString _connectionString;
+        private readonly ILogger<DbCommand> _logger;
 
-        public GetProductsHandler(IConnectionString connectionString)
+        public GetProductsHandler(IConnectionString connectionString, ILogger<DbCommand> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         public async Task<IPageResult<Product>> Handle(GetProductList request, CancellationToken cancellationToken)
@@ -42,7 +47,7 @@ namespace Data.Products.QueryHandlers
                 take = request.Take()
             };
 
-            using (var db = new SqlConnection(_connectionString.Value))
+            using (var db = new SqlConnection(_connectionString.Value).WithLog(_logger))
             {
                 var count = await db.ExecuteScalarAsync<int>(CountQuery);
                 var page = await db.QueryAsync<Product>(PageQuery, parameters);

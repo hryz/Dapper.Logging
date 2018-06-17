@@ -28,6 +28,7 @@ namespace Data.Products.QueryHandlers
                 .OrderBy(x => x.Id)
                 .Skip(request.Skip())
                 .Take(request.Take())
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
             return new PageResult<ProductEf>(count, page);
