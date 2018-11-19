@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper.Logging.Configuration;
@@ -47,7 +48,15 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             var result = action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
+
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine(CommandText);
+            foreach (DbParameter param in Parameters)
+            {
+                logBuilder.AppendLine($" -- @{param.ParameterName}:{param.Value}");
+            }
+
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, logBuilder.ToString(), sw.ElapsedMilliseconds);
             return result;
         }
 
@@ -56,7 +65,15 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             var result = await action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
+
+            var logBuilder = new StringBuilder();
+            logBuilder.AppendLine(CommandText);
+            foreach (DbParameter param in Parameters)
+            {
+                logBuilder.AppendLine($" -- @{param.ParameterName}:{param.Value}");
+            }
+
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, logBuilder.ToString(), sw.ElapsedMilliseconds);
             return result;
         }
 
