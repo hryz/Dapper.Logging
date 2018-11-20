@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +14,8 @@ namespace Dapper.Logging
 {
     internal class LoggedCommand : DbCommand
     {
+        private const string Hidden = "?";
+
         private readonly DbCommand _command;
         private readonly ILogger _logger;
         private readonly DbLoggingConfiguration _cfg;
@@ -48,15 +52,9 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             var result = action();
             sw.Stop();
-
-            var logBuilder = new StringBuilder();
-            logBuilder.AppendLine(CommandText);
-            foreach (DbParameter param in Parameters)
-            {
-                logBuilder.AppendLine($" -- @{param.ParameterName}:{param.Value}");
-            }
-
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, logBuilder.ToString(), sw.ElapsedMilliseconds);
+            
+            var parameters = GetParameterValues(); //it's a dictionary for structured logging (ELK stack)
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, parameters, sw.ElapsedMilliseconds);
             return result;
         }
 
@@ -66,15 +64,22 @@ namespace Dapper.Logging
             var result = await action();
             sw.Stop();
 
-            var logBuilder = new StringBuilder();
-            logBuilder.AppendLine(CommandText);
-            foreach (DbParameter param in Parameters)
+            var parameters = GetParameterValues(); //it's a dictionary for structured logging (ELK stack)
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, parameters, sw.ElapsedMilliseconds);
+            return result;
+        }
+
+        private IDictionary<string, object> GetParameterValues()
+        {
+            IEnumerable<DbParameter> GetParameters()
             {
-                logBuilder.AppendLine($" -- @{param.ParameterName}:{param.Value}");
+                foreach (DbParameter parameter in Parameters)
+                    yield return parameter;
             }
 
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, logBuilder.ToString(), sw.ElapsedMilliseconds);
-            return result;
+            return GetParameters().ToDictionary(
+                k => k.ParameterName,
+                v => _cfg.LogSensitiveData ? v.Value : Hidden);
         }
 
         //other members
