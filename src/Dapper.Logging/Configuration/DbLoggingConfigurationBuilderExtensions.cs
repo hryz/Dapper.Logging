@@ -51,5 +51,16 @@ namespace Dapper.Logging.Configuration
             x.ExecuteQueryMessage = message;
             return x;
         }
+
+        /// <summary>
+        /// Enables logging of the query parameter values
+        /// </summary>
+        /// <param name="x">The builder</param>
+        /// <returns></returns>
+        public static DbLoggingConfigurationBuilder WithSensitiveDataLogging(this DbLoggingConfigurationBuilder x)
+        {
+            x.LogSensitiveData = true;
+            return x;
+        }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper.Logging.Configuration;
@@ -11,6 +14,8 @@ namespace Dapper.Logging
 {
     internal class LoggedCommand : DbCommand
     {
+        private const string Hidden = "?";
+
         private readonly DbCommand _command;
         private readonly ILogger _logger;
         private readonly DbLoggingConfiguration _cfg;
@@ -47,7 +52,9 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             var result = action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
+            
+            var parameters = GetParameterValues(); //it's a dictionary for structured logging (ELK stack)
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, parameters, sw.ElapsedMilliseconds);
             return result;
         }
 
@@ -56,8 +63,23 @@ namespace Dapper.Logging
             var sw = Stopwatch.StartNew();
             var result = await action();
             sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, sw.ElapsedMilliseconds);
+
+            var parameters = GetParameterValues(); //it's a dictionary for structured logging (ELK stack)
+            _logger.Log(_cfg.LogLevel, _cfg.ExecuteQueryMessage, CommandText, parameters, sw.ElapsedMilliseconds);
             return result;
+        }
+
+        private IDictionary<string, object> GetParameterValues()
+        {
+            IEnumerable<DbParameter> GetParameters()
+            {
+                foreach (DbParameter parameter in Parameters)
+                    yield return parameter;
+            }
+
+            return GetParameters().ToDictionary(
+                k => k.ParameterName,
+                v => _cfg.LogSensitiveData ? v.Value : Hidden);
         }
 
         //other members

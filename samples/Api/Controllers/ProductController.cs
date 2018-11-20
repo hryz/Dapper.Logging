@@ -12,6 +12,9 @@ namespace Api.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private const int DefaultPage = 1;
+        private const int DefaultSize = 10;
+
         private readonly IMediator _mediator;
 
         public ProductController(IMediator mediator)
@@ -20,13 +23,19 @@ namespace Api.Controllers
         }
 
         [HttpGet("list")]
-        public Task<IPageResult<Product>> GetList(int page, int pageSize, CancellationToken token)
+        public Task<IPageResult<Product>> GetList(
+            int page = DefaultPage, 
+            int pageSize = DefaultSize, 
+            CancellationToken token = default)
         {
             return _mediator.Send(new GetProductList(page, pageSize), token);
         }
 
         [HttpGet("listEf")]
-        public Task<IPageResult<ProductEf>> GetListEf(int page, int pageSize, CancellationToken token)
+        public Task<IPageResult<ProductEf>> GetListEf(
+            int page = DefaultPage, 
+            int pageSize = DefaultSize, 
+            CancellationToken token = default)
         {
             return _mediator.Send(new GetProductListEf(page, pageSize), token);
         }

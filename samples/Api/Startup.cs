@@ -29,10 +29,19 @@ namespace Api
             var conStr = Configuration.GetConnectionString("DefaultConnection");
 
             //EF Core
-            services.AddDbContext<EfDataContext>(options => options.UseSqlServer(conStr), ServiceLifetime.Scoped);
+            services.AddDbContext<EfDataContext>(
+                options => options
+                    .UseSqlServer(conStr)
+                    //.EnableSensitiveDataLogging() //uncomment to show values of the query parameters
+                ,ServiceLifetime.Scoped);
 
             //Dapper + Logging
-            services.AddDbConnectionFactory(prv => new SqlConnection(conStr), x => x.WithLogLevel(LogLevel.Debug), ServiceLifetime.Scoped);
+            services.AddDbConnectionFactory(
+                prv => new SqlConnection(conStr), 
+                options => options
+                    .WithLogLevel(LogLevel.Debug)
+                    //.WithSensitiveDataLogging() //uncomment to show values of the query parameters
+                ,ServiceLifetime.Scoped);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
