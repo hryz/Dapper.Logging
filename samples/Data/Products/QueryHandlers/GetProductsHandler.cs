@@ -12,20 +12,20 @@ namespace Data.Products.QueryHandlers
     {
         private const string CountQuery = @"
         SELECT count(*)
-        FROM Production.Product p
-        WHERE p.ListPrice > 0";
+        FROM dbo.product p
+        WHERE p.price > 0";
 
         private const string PageQuery = @"
-        SELECT
-          ProductID     AS Id,
-          Name          AS Name,
-          ProductNumber AS Code,
-          ListPrice     AS Price
-        FROM Production.Product p
-        WHERE p.ListPrice > 0
-        ORDER BY ProductID
-          OFFSET @skip ROWS
-          FETCH NEXT @take ROWS ONLY";
+        SELECT id      AS Id,
+               name    AS Name,
+               code    AS Code,
+               price   AS Price,
+               deleted AS Deleted
+        FROM dbo.product p
+        WHERE p.price > 0
+        ORDER BY id
+            OFFSET @skip ROWS
+            FETCH NEXT @take ROWS ONLY";
 
 
         private readonly IDbConnectionFactory _connectionFactory;
