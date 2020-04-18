@@ -12,7 +12,7 @@ namespace Data.Products.QueryHandlers
     {
         private const string CountQuery = @"
         SELECT count(*)
-        FROM dbo.product p
+        FROM public.product p
         WHERE p.price > 0";
 
         private const string PageQuery = @"
@@ -21,11 +21,11 @@ namespace Data.Products.QueryHandlers
                code    AS Code,
                price   AS Price,
                deleted AS Deleted
-        FROM dbo.product p
+        FROM public.product p
         WHERE p.price > 0
         ORDER BY id
-            OFFSET @skip ROWS
-            FETCH NEXT @take ROWS ONLY";
+            OFFSET :skip
+            LIMIT :take";
 
 
         private readonly IDbConnectionFactory _connectionFactory;
@@ -45,9 +45,9 @@ namespace Data.Products.QueryHandlers
 
             using (var db = _connectionFactory.CreateConnection())
             {
-                var count = await db.ExecuteScalarAsync<int>(CountQuery);
-                var page = await db.QueryAsync<Product>(PageQuery, parameters);
-                return new PageResult<Product>(count, page);
+                 var count = await db.ExecuteScalarAsync<int>(CountQuery);
+                 var page = await db.QueryAsync<Product>(PageQuery, parameters);
+                 return new PageResult<Product>(count, page);
             }
         }
     }

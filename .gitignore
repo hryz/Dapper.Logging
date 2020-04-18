@@ -6,3 +6,4 @@ _ReSharper.Caches/
 **/*.DotSettings.user
 **/Logs/
 *.user
+.idea/

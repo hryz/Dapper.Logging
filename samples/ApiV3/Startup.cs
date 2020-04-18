@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper.Logging;
 using Dapper.Logging.Configuration;
 using Data;
@@ -10,15 +5,13 @@ using Data.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 namespace ApiV3
 {
@@ -46,15 +39,15 @@ namespace ApiV3
             //EF Core
             services.AddDbContext<EfDataContext>(
                 options => options
-                    .UseSqlServer(conStr)
+                    .UseNpgsql(conStr)
                 .EnableSensitiveDataLogging() //uncomment to show values of the query parameters
                 ,ServiceLifetime.Scoped);
 
             //Dapper + Logging
             services.AddDbConnectionFactory(
-                prv => new SqlConnection(conStr), 
+                prv => new NpgsqlConnection(conStr), 
                 options => options
-                    .WithLogLevel(LogLevel.Debug)
+                    .WithLogLevel(LogLevel.Information)
                 .WithSensitiveDataLogging() //uncomment to show values of the query parameters
                 ,ServiceLifetime.Scoped);
         }

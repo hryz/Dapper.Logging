@@ -8,9 +8,9 @@ namespace Dapper.Logging.Configuration
     {
         private static readonly DbLoggingConfiguration Default = new DbLoggingConfiguration(
             logLevel: Level.Information,
-            openConnectionMessage: "Dapper connection: open, elapsed: {0} ms",
-            closeConnectionMessage: "Dapper connection: close, elapsed: {0} ms",
-            executeQueryMessage: $"Dapper query:{NewLine}{{0}}{NewLine}Parameters:{{1}}, elapsed: {{2}} ms",
+            openConnectionMessage: "Dapper connection: open, elapsed: {elapsed} ms",
+            closeConnectionMessage: "Dapper connection: close, elapsed: {elapsed} ms",
+            executeQueryMessage: $"Dapper query:{NewLine}{{query}}{NewLine}Parameters:{{params}}, elapsed: {{elapsed}} ms",
             logSensitiveData: false);
 
         public Level? LogLevel { get; set; }
