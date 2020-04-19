@@ -1,5 +1,4 @@
-﻿using System;
-using Level = Microsoft.Extensions.Logging.LogLevel;
+﻿using Level = Microsoft.Extensions.Logging.LogLevel;
 using static System.Environment;
 
 namespace Dapper.Logging.Configuration
@@ -8,9 +7,10 @@ namespace Dapper.Logging.Configuration
     {
         private static readonly DbLoggingConfiguration Default = new DbLoggingConfiguration(
             logLevel: Level.Information,
-            openConnectionMessage: "Dapper connection: open, elapsed: {elapsed} ms",
-            closeConnectionMessage: "Dapper connection: close, elapsed: {elapsed} ms",
-            executeQueryMessage: $"Dapper query:{NewLine}{{query}}{NewLine}Parameters:{{params}}, elapsed: {{elapsed}} ms",
+            openConnectionMessage: "Dapper connection: open, elapsed: {elapsed} ms, context: {@context}",
+            closeConnectionMessage: "Dapper connection: close, elapsed: {elapsed} ms, context: {@context}",
+            executeQueryMessage: $"Dapper query:{NewLine}{{query}}{NewLine}" +
+                                 "Parameters: {params}, elapsed: {elapsed} ms, context: {@context}",
             logSensitiveData: false);
 
         public Level? LogLevel { get; set; }

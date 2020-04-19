@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Logging;
@@ -28,9 +29,9 @@ namespace Data.Products.QueryHandlers
             LIMIT :take";
 
 
-        private readonly IDbConnectionFactory _connectionFactory;
+        private readonly IDbConnectionFactory<LoggingContext> _connectionFactory;
 
-        public GetProductsHandler(IDbConnectionFactory connectionFactory)
+        public GetProductsHandler(IDbConnectionFactory<LoggingContext> connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -43,7 +44,13 @@ namespace Data.Products.QueryHandlers
                 take = request.Take()
             };
 
-            using (var db = _connectionFactory.CreateConnection())
+            var ctx = new LoggingContext
+            {
+                ConnectionId = Guid.NewGuid().ToString("N").Substring(0,8),
+                UserId = "j.doe@gmail.com"
+            };
+
+            using (var db = _connectionFactory.CreateConnection(ctx))
             {
                  var count = await db.ExecuteScalarAsync<int>(CountQuery);
                  var page = await db.QueryAsync<Product>(PageQuery, parameters);

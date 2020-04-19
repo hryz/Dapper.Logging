@@ -40,15 +40,28 @@ namespace ApiV3
             services.AddDbContext<EfDataContext>(
                 options => options
                     .UseNpgsql(conStr)
-                .EnableSensitiveDataLogging() //uncomment to show values of the query parameters
+                .EnableSensitiveDataLogging() //show values of the query parameters
                 ,ServiceLifetime.Scoped);
 
             //Dapper + Logging
-            services.AddDbConnectionFactory(
+            services.AddDbConnectionFactory(   
                 prv => new NpgsqlConnection(conStr), 
                 options => options
                     .WithLogLevel(LogLevel.Information)
-                .WithSensitiveDataLogging() //uncomment to show values of the query parameters
+                .WithSensitiveDataLogging() //to show values of the query parameters
+                ,ServiceLifetime.Scoped);
+            
+            //Include extra context into log messages
+            services.AddDbConnectionFactoryWithCtx<LoggingContext>(
+                prv => new NpgsqlConnection(conStr), 
+                options => options
+                    .WithLogLevel(LogLevel.Information)
+                    .WithSensitiveDataLogging() //show values of the query parameters
+                ,ServiceLifetime.Scoped);
+            
+            //Raw hooks, no predefined effect (Low level API: can be used for anything e.g. metrics)
+            services.AddDbConnectionFactoryWithHooks<(int, bool)>(
+                prv => new NpgsqlConnection(conStr)
                 ,ServiceLifetime.Scoped);
         }
 
