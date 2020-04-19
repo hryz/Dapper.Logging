@@ -30,3 +30,21 @@ Also, you can alter the default messages using the `DbLoggingConfigurationBuilde
 
 The code is simpler than this explanation 🙂. Please check the _Samples_.  
 There you can find a comparison of EF Core and Dapper. It should show the similarities in logging behavior.
+
+### How to start
+
+Run `docker-compose build` , and then `docker-compose up`  
+This will spin up a `PostgreSQL`, `ASP.Net Core API`, `Elastic`, `Kibana`  
+Of course, you can start services selectively (e.g. only DB `docker-compose up db`)  
+If you'd like to play with **ELK**, you should do the following:
+1. start everything in docker compose
+2. wait approximately 1 min for it to start 
+    (you can check elastic by `http:localhost:9200` and Kibana by `http://localhost:5601`)
+3. run a few queries for API to fill the elastic index:
+    (`http://localhost:5000/swagger`)
+4. open Kibana and create an index pattern:  
+    4.1 Management (gear icon) -> Index Patterns  
+    4.2 Create a pattern `logstash-`  
+    4.3 Select the timestamp field `@timestamp` from the dropdown menu  
+    4.4 Click **Create index**  
+5. enjoy playing with Kibana and structured logging

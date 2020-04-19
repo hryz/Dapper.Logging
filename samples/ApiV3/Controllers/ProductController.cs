@@ -6,7 +6,7 @@ using Data.Products.ReadModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace ApiV3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

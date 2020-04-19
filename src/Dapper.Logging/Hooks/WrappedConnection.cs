@@ -3,49 +3,45 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper.Logging.Configuration;
-using Microsoft.Extensions.Logging;
 
-namespace Dapper.Logging
+namespace Dapper.Logging.Hooks
 {
-    internal class LoggedConnection : DbConnection
+    internal class WrappedConnection<T> : DbConnection
     {
         private readonly DbConnection _connection;
-        private readonly ILogger _logger;
-        private readonly DbLoggingConfiguration _cfg;
+        private readonly ISqlHooks<T> _hooks;
+        private readonly T _context;
 
-        public LoggedConnection(DbConnection connection, ILogger logger, DbLoggingConfiguration cfg)
+        public WrappedConnection(DbConnection connection, ISqlHooks<T> hooks, T context)
         {
             _connection = connection;
-            _logger = logger;
-            _cfg = cfg;
+            _hooks = hooks;
+            _context = context;
         }
 
         public override void Close()
         {
             var sw = Stopwatch.StartNew();
             _connection.Close();
-            sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.CloseConnectionMessage, sw.ElapsedMilliseconds);
+            _hooks.ConnectionClosed(this, _context, sw.ElapsedMilliseconds);
         }
 
         public override void Open()
         {
             var sw = Stopwatch.StartNew();
             _connection.Open();
-            sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionMessage, sw.ElapsedMilliseconds);
+            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
         }
 
         public override async Task OpenAsync(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
             await _connection.OpenAsync(cancellationToken);
-            sw.Stop();
-            _logger.Log(_cfg.LogLevel, _cfg.OpenConnectionMessage, sw.ElapsedMilliseconds);
+            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
         }
 
-        protected override DbCommand CreateDbCommand() => new LoggedCommand(_connection.CreateCommand(), this, _logger, _cfg);
+        protected override DbCommand CreateDbCommand() => 
+            new WrappedCommand<T>(_connection.CreateCommand(), this, _hooks, _context);
 
         //other members
 

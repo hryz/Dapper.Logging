@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Logging;
@@ -12,25 +13,25 @@ namespace Data.Products.QueryHandlers
     {
         private const string CountQuery = @"
         SELECT count(*)
-        FROM Production.Product p
-        WHERE p.ListPrice > 0";
+        FROM public.product p
+        WHERE p.price > 0";
 
         private const string PageQuery = @"
-        SELECT
-          ProductID     AS Id,
-          Name          AS Name,
-          ProductNumber AS Code,
-          ListPrice     AS Price
-        FROM Production.Product p
-        WHERE p.ListPrice > 0
-        ORDER BY ProductID
-          OFFSET @skip ROWS
-          FETCH NEXT @take ROWS ONLY";
+        SELECT id      AS Id,
+               name    AS Name,
+               code    AS Code,
+               price   AS Price,
+               deleted AS Deleted
+        FROM public.product p
+        WHERE p.price > 0
+        ORDER BY id
+            OFFSET :skip
+            LIMIT :take";
 
 
-        private readonly IDbConnectionFactory _connectionFactory;
+        private readonly IDbConnectionFactory<LoggingContext> _connectionFactory;
 
-        public GetProductsHandler(IDbConnectionFactory connectionFactory)
+        public GetProductsHandler(IDbConnectionFactory<LoggingContext> connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -43,11 +44,17 @@ namespace Data.Products.QueryHandlers
                 take = request.Take()
             };
 
-            using (var db = _connectionFactory.CreateConnection())
+            var ctx = new LoggingContext
             {
-                var count = await db.ExecuteScalarAsync<int>(CountQuery);
-                var page = await db.QueryAsync<Product>(PageQuery, parameters);
-                return new PageResult<Product>(count, page);
+                ConnectionId = Guid.NewGuid().ToString("N").Substring(0,8),
+                UserId = "j.doe@gmail.com"
+            };
+
+            using (var db = _connectionFactory.CreateConnection(ctx))
+            {
+                 var count = await db.ExecuteScalarAsync<int>(CountQuery);
+                 var page = await db.QueryAsync<Product>(PageQuery, parameters);
+                 return new PageResult<Product>(count, page);
             }
         }
     }

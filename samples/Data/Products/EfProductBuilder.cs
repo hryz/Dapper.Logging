@@ -8,12 +8,13 @@ namespace Data.Products
     {
         public static void Configure(this EntityTypeBuilder<ProductEf> config)
         {
-            config.ToTable("Product", "Production");
+            config.ToTable("product", "public");
             config.HasKey(t => t.Id);
-            config.Property(t => t.Id).HasColumnName("ProductID");
-            config.Property(t => t.Name);
-            config.Property(t => t.Code).HasColumnName("ProductNumber");
-            config.Property(t => t.Price).HasColumnName("ListPrice").HasColumnType("money");
+            config.Property(t => t.Id).HasColumnName("id");
+            config.Property(t => t.Name).HasColumnName("name");
+            config.Property(t => t.Code).HasColumnName("code");
+            config.Property(t => t.Price).HasColumnName("price");
+            config.Property(t => t.Deleted).HasColumnName("deleted");
         }
     }
 }
