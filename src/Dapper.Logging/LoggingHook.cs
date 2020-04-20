@@ -1,6 +1,5 @@
 using System;
 using System.Data.Common;
-using System.Diagnostics;
 using Dapper.Logging.Configuration;
 using Dapper.Logging.Hooks;
 using Microsoft.Extensions.Logging;
@@ -11,11 +10,13 @@ namespace Dapper.Logging
     {
         private readonly ILogger _logger;
         private readonly DbLoggingConfiguration _config;
+        private readonly Func<DbConnection, object> _connectionProjector;
 
         public LoggingHook(ILogger logger, DbLoggingConfiguration config)
         {
             _logger = logger;
             _config = config;
+            _connectionProjector = _config.ConnectionProjector ?? (_ => Empty.Object);
         }
 
         public void ConnectionOpened(DbConnection connection, T context, long elapsedMs) => 
@@ -23,14 +24,16 @@ namespace Dapper.Logging
                 _config.LogLevel, 
                 _config.OpenConnectionMessage,
                 elapsedMs,
-                context);
+                context,
+                _connectionProjector(connection));
 
         public void ConnectionClosed(DbConnection connection, T context, long elapsedMs) => 
             _logger.Log(
                 _config.LogLevel, 
                 _config.CloseConnectionMessage, 
                 elapsedMs,
-                context);
+                context,
+                _connectionProjector(connection));
 
         public void CommandExecuted(DbCommand command, T context, long elapsedMs) =>
             _logger.Log(
@@ -39,6 +42,7 @@ namespace Dapper.Logging
                 command.CommandText,
                 command.GetParameters(hideValues: !_config.LogSensitiveData),
                 elapsedMs,
-                context);
+                context,
+                _connectionProjector(command.Connection));
     }
 }

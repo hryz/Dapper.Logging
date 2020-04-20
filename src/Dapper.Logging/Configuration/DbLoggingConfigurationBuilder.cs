@@ -1,37 +1,29 @@
-﻿using Level = Microsoft.Extensions.Logging.LogLevel;
-using static System.Environment;
+﻿using System;
+using System.Data.Common;
+using Microsoft.Extensions.Logging;
+using static Dapper.Logging.Configuration.DbLoggingConfiguration;
 
 namespace Dapper.Logging.Configuration
 {
     public class DbLoggingConfigurationBuilder
     {
-        private static readonly DbLoggingConfiguration Default = new DbLoggingConfiguration(
-            logLevel: Level.Information,
-            openConnectionMessage: "Dapper connection: open, elapsed: {elapsed} ms, context: {@context}",
-            closeConnectionMessage: "Dapper connection: close, elapsed: {elapsed} ms, context: {@context}",
-            executeQueryMessage: $"Dapper query:{NewLine}{{query}}{NewLine}" +
-                                 "Parameters: {params}, elapsed: {elapsed} ms, context: {@context}",
-            logSensitiveData: false);
+        public LogLevel? LogLevel { get; set; } = Default.LogLevel;
+        public string OpenConnectionMessage { get; set; } = Default.OpenConnectionMessage;
+        public string CloseConnectionMessage { get; set; } = Default.CloseConnectionMessage;
+        public string ExecuteQueryMessage { get; set; } = Default.ExecuteQueryMessage;
+        public bool? LogSensitiveData { get; set; } = Default.LogSensitiveData;
+        public Func<DbConnection, object> ConnectionProjector { get; set; } = Default.ConnectionProjector;
 
-        public Level? LogLevel { get; set; }
-        public string OpenConnectionMessage { get; set; }
-        public string CloseConnectionMessage { get; set; }
-        public string ExecuteQueryMessage { get; set; }
-        public bool? LogSensitiveData { get; set; }
-
-        public DbLoggingConfiguration Build()
-        {
-            return new DbLoggingConfiguration(
+        public DbLoggingConfiguration Build() =>
+            new DbLoggingConfiguration(
                 LogLevel ?? Default.LogLevel,
-                OpenConnectionMessage ?? Default.OpenConnectionMessage,
-                CloseConnectionMessage ?? Default.CloseConnectionMessage,
-                ExecuteQueryMessage ?? Default.ExecuteQueryMessage,
-                LogSensitiveData ?? Default.LogSensitiveData);
-        }
+                OpenConnectionMessage,
+                CloseConnectionMessage,
+                ExecuteQueryMessage,
+                LogSensitiveData ?? Default.LogSensitiveData,
+                ConnectionProjector);
 
-        public static implicit operator DbLoggingConfiguration(DbLoggingConfigurationBuilder src)
-        {
-            return src.Build();
-        }
+        public static implicit operator DbLoggingConfiguration(DbLoggingConfigurationBuilder src) =>
+            src.Build();
     }
 }

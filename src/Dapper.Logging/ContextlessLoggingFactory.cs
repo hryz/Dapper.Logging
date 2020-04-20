@@ -6,12 +6,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Dapper.Logging
 {
-    internal class ContextlessLoggingFactory : IDbConnectionFactory
+    public class ContextlessLoggingFactory : IDbConnectionFactory
     {
-        private class Empty { }
         private readonly LoggingHook<Empty> _hooks;
         private readonly WrappedConnectionFactory<Empty> _factory;
-        private static readonly Empty Context = new Empty();
         
         public ContextlessLoggingFactory(
             ILogger<DbConnection> logger, 
@@ -23,6 +21,6 @@ namespace Dapper.Logging
         }
         
         public DbConnection CreateConnection() => 
-            _factory.CreateConnection(_hooks, Context);
+            _factory.CreateConnection(_hooks, Empty.Object);
     }
 }

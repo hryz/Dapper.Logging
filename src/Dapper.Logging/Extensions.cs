@@ -23,11 +23,11 @@ namespace Dapper.Logging
         public static IServiceCollection AddDbConnectionFactory(
             this IServiceCollection services, 
             Func<IServiceProvider, DbConnection> factory,
-            Action<DbLoggingConfigurationBuilder> config = null,
+            Func<DbLoggingConfigurationBuilder, DbLoggingConfigurationBuilder> config = null,
             ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             var builder = new DbLoggingConfigurationBuilder();
-            config?.Invoke(builder);
+            builder = config?.Invoke(builder) ?? builder;
 
             object FactoryWrapper(IServiceProvider x) => 
                 new ContextlessLoggingFactory(
@@ -50,11 +50,11 @@ namespace Dapper.Logging
         public static IServiceCollection AddDbConnectionFactoryWithCtx<T>(
             this IServiceCollection services, 
             Func<IServiceProvider, DbConnection> factory,
-            Action<DbLoggingConfigurationBuilder> config = null,
+            Func<DbLoggingConfigurationBuilder, DbLoggingConfigurationBuilder> config = null,
             ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             var builder = new DbLoggingConfigurationBuilder();
-            config?.Invoke(builder);
+            builder = config?.Invoke(builder) ?? builder;
 
             object FactoryWrapper(IServiceProvider x) => 
                 new ContextfulLoggingFactory<T>(
@@ -85,6 +85,12 @@ namespace Dapper.Logging
             return services;
         }
 
+        /// <summary>
+        /// Extracts the parameter name-value pairs from a DBCommand
+        /// </summary>
+        /// <param name="command">The DBCommand</param>
+        /// <param name="hideValues">Replace values with a mask</param>
+        /// <returns>Parameter values by names</returns>
         public static Dictionary<string, object> GetParameters(this DbCommand command, bool hideValues = false)
         {
             IEnumerable<DbParameter> GetParameters()

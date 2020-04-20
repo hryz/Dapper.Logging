@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dapper.Logging
 {
-    internal class ContextfulLoggingFactory<T> : IDbConnectionFactory<T>
+    public class ContextfulLoggingFactory<T> : IDbConnectionFactory<T>
     {
         private readonly LoggingHook<T> _hooks;
         private readonly WrappedConnectionFactory<T> _factory;

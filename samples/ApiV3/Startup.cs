@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Dapper.Logging;
 using Dapper.Logging.Configuration;
 using Data;
@@ -40,16 +41,17 @@ namespace ApiV3
             services.AddDbContext<EfDataContext>(
                 options => options
                     .UseNpgsql(conStr)
-                .EnableSensitiveDataLogging() //show values of the query parameters
-                ,ServiceLifetime.Scoped);
+                    .EnableSensitiveDataLogging() //show values of the query parameters
+                , ServiceLifetime.Scoped);
 
             //Dapper + Logging
-            services.AddDbConnectionFactory(   
-                prv => new NpgsqlConnection(conStr), 
+            services.AddDbConnectionFactory(
+                prv => new NpgsqlConnection(conStr),
                 options => options
                     .WithLogLevel(LogLevel.Information)
-                .WithSensitiveDataLogging() //to show values of the query parameters
-                ,ServiceLifetime.Scoped);
+                    .WithSensitiveDataLogging() //to show values of the query parameters
+                    .WithConnectionProjector(c => new {c.DataSource, c.Database})
+                , ServiceLifetime.Scoped);
             
             //Include extra context into log messages
             services.AddDbConnectionFactoryWithCtx<LoggingContext>(
@@ -57,6 +59,7 @@ namespace ApiV3
                 options => options
                     .WithLogLevel(LogLevel.Information)
                     .WithSensitiveDataLogging() //show values of the query parameters
+                    .WithConnectionProjector(c => new {c.DataSource, c.Database})
                 ,ServiceLifetime.Scoped);
             
             //Raw hooks, no predefined effect (Low level API: can be used for anything e.g. metrics)
