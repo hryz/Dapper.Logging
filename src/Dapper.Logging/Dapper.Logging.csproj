@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>0.4.0.0</AssemblyVersion>
-    <Version>0.4.0.0</Version>
+    <AssemblyVersion>0.4.1.0</AssemblyVersion>
+    <Version>0.4.1.0</Version>
     <Authors>Anton Hryzodub</Authors>
     <Company />
     <Copyright>Anton Hryzodub</Copyright>
@@ -13,10 +13,8 @@
     <RepositoryUrl>https://github.com/hryz/Dapper.Logging</RepositoryUrl>
     <PackageTags>Dapper Logging</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.4.0.0</PackageVersion>
-    <PackageReleaseNotes>Added an option to log the db connection, 
-fixed the confusing behavior of builders (⚠️ possible breaking change ⚠️),
-made factories public (support of multiple connections in DI)</PackageReleaseNotes>
+    <PackageVersion>0.4.1.0</PackageVersion>
+    <PackageReleaseNotes>Replaced ILogger&lt;DbConnection&gt; by ILogger&lt;IDbConnectionFactory&lt;Context&gt;&gt;</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

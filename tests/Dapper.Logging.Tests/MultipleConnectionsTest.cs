@@ -14,9 +14,9 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_support_multiple_connections()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
             
             var con1 = Substitute.For<DbConnection>();
             var con2 = Substitute.For<DbConnection>();
@@ -25,7 +25,7 @@ namespace Dapper.Logging.Tests
             services.AddTransient<IConnectionFactory1>(prv =>
                 new ConnectionFactory1(
                     new ContextlessLoggingFactory(
-                        prv.GetRequiredService<ILogger<DbConnection>>(),
+                        prv.GetRequiredService<ILogger<IDbConnectionFactory>>(),
                         new DbLoggingConfigurationBuilder(),
                         () => con1)));
 
@@ -33,7 +33,7 @@ namespace Dapper.Logging.Tests
             services.AddTransient<IConnectionFactory2>(prv =>
                 new ConnectionFactory2(
                     new ContextlessLoggingFactory(
-                        prv.GetRequiredService<ILogger<DbConnection>>(),
+                        prv.GetRequiredService<ILogger<IDbConnectionFactory>>(),
                         new DbLoggingConfigurationBuilder(),
                         () => con2)));
             

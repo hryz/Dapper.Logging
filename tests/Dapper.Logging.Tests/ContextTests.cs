@@ -15,10 +15,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_pass_extra_context_to_log_messages()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory<Context>>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory<Context>>>(logger);
 
             services.AddDbConnectionFactoryWithCtx<Context>(
                 prv => innerConnection,
@@ -41,10 +41,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_pass_anonymous_context_to_log_messages()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory<object>>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory<object>>>(logger);
 
             services.AddDbConnectionFactoryWithCtx<object>(
                 prv => innerConnection,
@@ -67,11 +67,11 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_pass_connection_to_log_messages()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory<Context>>();
             var innerConnection = Substitute.For<DbConnection>();
             innerConnection.DataSource.Returns("source123");
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory<Context>>>(logger);
 
             services.AddDbConnectionFactoryWithCtx<Context>(
                 prv => innerConnection,

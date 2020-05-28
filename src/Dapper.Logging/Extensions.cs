@@ -31,7 +31,7 @@ namespace Dapper.Logging
 
             object FactoryWrapper(IServiceProvider x) => 
                 new ContextlessLoggingFactory(
-                    x.GetService<ILogger<DbConnection>>(), 
+                    x.GetService<ILogger<IDbConnectionFactory>>(), 
                     builder.Build(),
                     () => factory(x));
 
@@ -58,7 +58,7 @@ namespace Dapper.Logging
 
             object FactoryWrapper(IServiceProvider x) => 
                 new ContextfulLoggingFactory<T>(
-                x.GetService<ILogger<DbConnection>>(), 
+                x.GetService<ILogger<IDbConnectionFactory<T>>>(), 
                 builder.Build(),
                 () => factory(x));
 

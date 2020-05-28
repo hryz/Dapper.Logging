@@ -17,10 +17,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_log_opening_of_connection()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
 
             services.AddDbConnectionFactory(
                 prv => innerConnection,
@@ -42,10 +42,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_log_closing_of_connection()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
 
             services.AddDbConnectionFactory(
                 prv => innerConnection,
@@ -67,7 +67,7 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Should_log_queries()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var innerCmd = Substitute.For<DbCommand>();
             var innerParams = Substitute.For<DbParameterCollection>();
@@ -78,7 +78,7 @@ namespace Dapper.Logging.Tests
             innerCmd.Parameters.Returns(innerParams);
             innerConnection.CreateCommand().Returns(innerCmd);
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
 
             services.AddDbConnectionFactory(
                 prv => innerConnection,
