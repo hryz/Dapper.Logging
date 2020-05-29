@@ -14,9 +14,9 @@ namespace Dapper.Logging.Hooks
         private readonly T _context;
 
         public WrappedCommand(
-            DbCommand command, 
-            DbConnection connection, 
-            ISqlHooks<T> hooks, 
+            DbCommand command,
+            DbConnection connection,
+            ISqlHooks<T> hooks,
             T context)
         {
             _command = command;
@@ -27,50 +27,50 @@ namespace Dapper.Logging.Hooks
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var reader = _command.ExecuteReader(behavior);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return reader;
         }
 
         protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(
             CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var reader = await _command.ExecuteReaderAsync(behavior, cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return reader;
         }
 
         public override int ExecuteNonQuery()
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = _command.ExecuteNonQuery();
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return result;
         }
 
         public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = await _command.ExecuteNonQueryAsync(cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return result;
         }
 
         public override object ExecuteScalar()
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = _command.ExecuteScalar();
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return result;
         }
 
         public override async Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             var result = await _command.ExecuteScalarAsync(cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            _hooks.CommandExecuted(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
             return result;
         }
 
@@ -129,6 +129,11 @@ namespace Dapper.Logging.Hooks
                 _command?.Dispose();
 
             base.Dispose(disposing);
+        }
+
+        double GetElapsedMilliseconds(long start, long stop)
+        {
+            return (stop - start) * 1000 / (double)Stopwatch.Frequency;
         }
     }
 }
