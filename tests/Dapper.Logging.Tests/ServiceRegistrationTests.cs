@@ -14,10 +14,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Fluent_api_registration_should_work()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
 
             services.AddDbConnectionFactory(
                 prv => innerConnection,
@@ -36,10 +36,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Manual_creation_of_builder_should_work()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
             
             services.AddDbConnectionFactory( 
                 prv => innerConnection,
@@ -62,10 +62,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Null_delegate_builder_should_work()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
             
             services.AddDbConnectionFactory(prv => innerConnection);
 
@@ -81,10 +81,10 @@ namespace Dapper.Logging.Tests
         [Fact]
         public void Delegate_returning_null_should_work()
         {
-            var logger = new TestLogger<DbConnection>();
+            var logger = new TestLogger<IDbConnectionFactory>();
             var innerConnection = Substitute.For<DbConnection>();
             var services = new ServiceCollection()
-                .AddSingleton<ILogger<DbConnection>>(logger);
+                .AddSingleton<ILogger<IDbConnectionFactory>>(logger);
             
             services.AddDbConnectionFactory(
                 prv => innerConnection,

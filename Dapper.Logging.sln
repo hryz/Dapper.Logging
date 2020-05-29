@@ -17,6 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{209B620D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper.Logging.Tests", "tests\Dapper.Logging.Tests\Dapper.Logging.Tests.csproj", "{74ECD200-F385-4F43-AA63-81233C10B7FD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{1F841F7F-2C01-4FDB-A28E-2F2B2B43BFCA}"
+ProjectSection(SolutionItems) = preProject
+	docker-compose.yml = docker-compose.yml
+	dockerfile = dockerfile
+	initdb.sql = initdb.sql
+	LICENSE.md = LICENSE.md
+	README.md = README.md
+	strong-name.snk = strong-name.snk
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
