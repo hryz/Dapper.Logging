@@ -19,26 +19,37 @@ namespace Dapper.Logging
             _connectionProjector = _config.ConnectionProjector ?? (_ => Empty.Object);
         }
 
-        public void ConnectionOpened(DbConnection connection, T context, long elapsedMs) => 
+        public void ConnectionOpened(DbConnection connection, T context, long elapsedMs) =>
             _logger.Log(
-                _config.LogLevel, 
+                _config.LogLevel,
                 _config.OpenConnectionMessage,
                 elapsedMs,
                 context,
                 _connectionProjector(connection));
 
-        public void ConnectionClosed(DbConnection connection, T context, long elapsedMs) => 
+        public void ConnectionClosed(DbConnection connection, T context, long elapsedMs) =>
             _logger.Log(
-                _config.LogLevel, 
-                _config.CloseConnectionMessage, 
+                _config.LogLevel,
+                _config.CloseConnectionMessage,
                 elapsedMs,
                 context,
                 _connectionProjector(connection));
 
         public void CommandExecuted(DbCommand command, T context, long elapsedMs) =>
             _logger.Log(
-                _config.LogLevel, 
-                _config.ExecuteQueryMessage, 
+                _config.LogLevel,
+                _config.ExecuteQueryMessage,
+                command.CommandText,
+                command.GetParameters(hideValues: !_config.LogSensitiveData),
+                elapsedMs,
+                context,
+                _connectionProjector(command.Connection));
+
+        public void CommandFailed(DbCommand command, T context, object elapsedMs, Exception exception) =>
+            _logger.Log(
+                _config.LogLevel,
+                exception,
+                _config.ExecuteQueryMessage,
                 command.CommandText,
                 command.GetParameters(hideValues: !_config.LogSensitiveData),
                 elapsedMs,

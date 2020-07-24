@@ -8,5 +8,6 @@ namespace Dapper.Logging.Hooks
         void ConnectionOpened(DbConnection connection, T context, long elapsedMs);
         void ConnectionClosed(DbConnection connection, T context, long elapsedMs);
         void CommandExecuted(DbCommand command, T context, long elapsedMs);
+        void CommandFailed(DbCommand command, T context, object elapsedMs, Exception exception);
     }
 }
