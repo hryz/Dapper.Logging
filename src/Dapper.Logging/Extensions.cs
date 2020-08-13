@@ -99,9 +99,14 @@ namespace Dapper.Logging
                     yield return parameter;
             }
 
-            return GetParameters().ToDictionary(
-                k => k.ParameterName,
-                v => hideValues ? "?" : v.Value);
+            return GetParameters()
+                .ToDictionary(
+                    k => k.ParameterName,
+                    v => hideValues
+                        ? "?"
+                        : v.Value == null || v.Value is DBNull
+                            ? "<null>"
+                            : v.Value);
         }
     }
 }
