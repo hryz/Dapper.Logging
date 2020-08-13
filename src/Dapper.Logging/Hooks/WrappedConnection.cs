@@ -21,23 +21,23 @@ namespace Dapper.Logging.Hooks
 
         public override void Close()
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             _connection.Close();
-            _hooks.ConnectionClosed(this, _context, sw.ElapsedMilliseconds);
+            _hooks.ConnectionClosed(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
         }
 
         public override void Open()
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             _connection.Open();
-            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            _hooks.ConnectionOpened(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
         }
 
         public override async Task OpenAsync(CancellationToken cancellationToken)
         {
-            var sw = Stopwatch.StartNew();
+            var start = Stopwatch.GetTimestamp();
             await _connection.OpenAsync(cancellationToken);
-            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            _hooks.ConnectionOpened(this, _context, GetElapsedMilliseconds(start, Stopwatch.GetTimestamp()));
         }
 
         protected override DbCommand CreateDbCommand() => 
@@ -70,6 +70,11 @@ namespace Dapper.Logging.Hooks
                 _connection?.Dispose();
 
             base.Dispose(disposing);
+        }
+
+        double GetElapsedMilliseconds(long start, long stop)
+        {
+            return (stop - start) * 1000 / (double)Stopwatch.Frequency;
         }
     }
 }
