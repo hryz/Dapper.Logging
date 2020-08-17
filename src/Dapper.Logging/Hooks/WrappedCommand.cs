@@ -28,50 +28,80 @@ namespace Dapper.Logging.Hooks
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
             var sw = Stopwatch.StartNew();
-            var reader = _command.ExecuteReader(behavior);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return reader;
+            try
+            {
+                return _command.ExecuteReader(behavior);
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(
             CommandBehavior behavior, CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            var reader = await _command.ExecuteReaderAsync(behavior, cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return reader;
+            try
+            {
+                return await _command.ExecuteReaderAsync(behavior, cancellationToken);
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override int ExecuteNonQuery()
         {
             var sw = Stopwatch.StartNew();
-            var result = _command.ExecuteNonQuery();
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return result;
+            try
+            {
+                return _command.ExecuteNonQuery();
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            var result = await _command.ExecuteNonQueryAsync(cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return result;
+            try
+            {
+                return await _command.ExecuteNonQueryAsync(cancellationToken);
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override object ExecuteScalar()
         {
             var sw = Stopwatch.StartNew();
-            var result = _command.ExecuteScalar();
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return result;
+            try
+            {
+                return _command.ExecuteScalar();
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override async Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            var result = await _command.ExecuteScalarAsync(cancellationToken);
-            _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
-            return result;
+            try
+            {
+                return await _command.ExecuteScalarAsync(cancellationToken);
+            }
+            finally
+            {
+                _hooks.CommandExecuted(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         //other members
