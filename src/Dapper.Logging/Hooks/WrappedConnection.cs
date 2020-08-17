@@ -22,22 +22,40 @@ namespace Dapper.Logging.Hooks
         public override void Close()
         {
             var sw = Stopwatch.StartNew();
-            _connection.Close();
-            _hooks.ConnectionClosed(this, _context, sw.ElapsedMilliseconds);
+            try
+            {
+                _connection.Close();
+            }
+            finally
+            {
+                _hooks.ConnectionClosed(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override void Open()
         {
             var sw = Stopwatch.StartNew();
-            _connection.Open();
-            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            try
+            {
+                _connection.Open();
+            }
+            finally
+            {
+                _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         public override async Task OpenAsync(CancellationToken cancellationToken)
         {
             var sw = Stopwatch.StartNew();
-            await _connection.OpenAsync(cancellationToken);
-            _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            try
+            {
+                await _connection.OpenAsync(cancellationToken);
+            }
+            finally
+            {
+                _hooks.ConnectionOpened(this, _context, sw.ElapsedMilliseconds);
+            }
         }
 
         protected override DbCommand CreateDbCommand() => 

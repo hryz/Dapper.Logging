@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>0.4.2.0</AssemblyVersion>
-    <Version>0.4.2.0</Version>
+    <AssemblyVersion>0.4.3.0</AssemblyVersion>
+    <Version>0.4.3.0</Version>
     <Authors>Anton Hryzodub</Authors>
     <Company />
     <Copyright>Anton Hryzodub</Copyright>
@@ -13,8 +13,8 @@
     <RepositoryUrl>https://github.com/hryz/Dapper.Logging</RepositoryUrl>
     <PackageTags>Dapper Logging</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.4.2.0</PackageVersion>
-    <PackageReleaseNotes>Made the assembly strong-name</PackageReleaseNotes>
+    <PackageVersion>0.4.3.0</PackageVersion>
+    <PackageReleaseNotes>Log failed queries, log null parameters explicitly</PackageReleaseNotes>
   </PropertyGroup>
   
   <PropertyGroup>
